@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "354532754557",
+    "project_id": "leetcode-tracker-abe03",
+    "storage_bucket": "leetcode-tracker-abe03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354532754557:android:9e902367016c2b400edd14",
+        "android_client_info": {
+          "package_name": "com.example.leetcode_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGUhNGfRJHcJy1mWLOCWL7fpBEY8eHlTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
