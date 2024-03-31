@@ -1,0 +1,1 @@
+const String unknownErrorMessage = 'Unknown error occurred';
