@@ -99,6 +99,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     on<AuthInitEvent>((event, emit) => _onAuthInit(event, emit));
+    on<LogoutEvent>((event, emit) => _onLogout(event, emit));
   }
 
   _onAuthInit(AuthInitEvent event, Emitter<AuthState> emit) {
@@ -112,5 +113,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(VerifyEmailState(hasErrors: false));
     }
+  }
+
+  _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
+    final result = await repo.signOut();
+    result.fold(
+        (l) => {emit(LoginState(hasErrors: true, errorMessage: l.message))},
+        (r) => {emit(LoginState(hasErrors: false))});
   }
 }

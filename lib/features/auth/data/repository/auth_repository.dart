@@ -27,7 +27,7 @@ class AuthRepository {
     }
   }
 
-  Future<Either<Faliure, bool>> signOut(String email, String password) async {
+  Future<Either<Faliure, bool>> signOut() async {
     try {
       final result = await service.signOut();
       return Right(result);
