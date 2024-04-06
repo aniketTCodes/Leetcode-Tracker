@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:leetcode_tracker/features/complete_profile/bloc/bloc/complete_profile_bloc.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/service/leetcode_service.dart';
 import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
@@ -58,6 +59,21 @@ class _CompleteProfileState extends State<CompleteProfile> {
                     ),
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: FloatingActionButton(
+                onPressed: () {
+                  context.read<CompleteProfileBloc>().add(
+                      CompleteProfileSaveEvent(
+                          displayName: _leetcodeIdController.text));
+                },
+                backgroundColor: Colors.yellow,
+                child: const Text('Continue'),
               ),
             )
           ],

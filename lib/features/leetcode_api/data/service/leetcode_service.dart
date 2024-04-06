@@ -49,7 +49,7 @@ class LeetcodeService {
 
   bool profileExists(String response) {
     final decodedResponse = json.decode(response);
-    if (decodedResponse['data'] == null) {
+    if (decodedResponse['data']['matchedUser'] == null) {
       return false;
     } else {
       return true;
