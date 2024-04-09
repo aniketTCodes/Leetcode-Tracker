@@ -3,10 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/di/di.dart';
 import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile_view.dart';
+import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
 import 'package:leetcode_tracker/firebase_options.dart';
 
@@ -33,6 +35,9 @@ class MainApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc()..add(AuthInitEvent()),
         ),
+        BlocProvider(
+          create: (context) => DashboardBloc()..add(InitDashBoardEvent()),
+        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -46,3 +51,17 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+
+final leetcodeTrackerTheme = ThemeData(
+    colorScheme: const ColorScheme(
+        brightness: Brightness.dark,
+        primary: appYellow,
+        onPrimary: Colors.transparent,
+        secondary: matteBlack,
+        onSecondary: Colors.transparent,
+        error: Colors.red,
+        onError: Colors.transparent,
+        background: Colors.black,
+        onBackground: Colors.transparent,
+        surface: Colors.grey,
+        onSurface: matteBlack));

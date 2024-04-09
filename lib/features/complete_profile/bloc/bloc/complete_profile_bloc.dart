@@ -54,6 +54,7 @@ class CompleteProfileBloc
       }
 
       final result = await repo.storeCompleteProfileData(ProfileData(
+        username: event.username,
           displayName: event.displayName,
           email: user.email!,
           acSubmissions:

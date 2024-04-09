@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 final class ProfileData {
+  final String username;
   final String displayName;
   final String email;
   final int acSubmissions;
@@ -10,7 +11,8 @@ final class ProfileData {
   final int submissions;
 
   ProfileData(
-      {required this.displayName,
+      {required this.username,
+      required this.displayName,
       required this.email,
       required this.acSubmissions,
       required this.easySubmissions,
@@ -20,6 +22,7 @@ final class ProfileData {
 
   factory ProfileData.fromMap(Map<String, dynamic> dataMap) {
     return ProfileData(
+        username: dataMap['username'],
         displayName: dataMap['displayName'],
         email: dataMap['email'],
         acSubmissions: dataMap['acSubmissions'],
@@ -31,6 +34,7 @@ final class ProfileData {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'username': username,
       'displayName': displayName,
       'email': email,
       'acSubmissions': acSubmissions,

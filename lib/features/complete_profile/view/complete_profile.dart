@@ -14,9 +14,12 @@ class CompleteProfile extends StatefulWidget {
 
 class _CompleteProfileState extends State<CompleteProfile> {
   late TextEditingController _leetcodeIdController;
+  late TextEditingController _displayNameController;
+
   @override
   void initState() {
     _leetcodeIdController = TextEditingController();
+    _displayNameController = TextEditingController();
     super.initState();
   }
 
@@ -64,12 +67,36 @@ class _CompleteProfileState extends State<CompleteProfile> {
             const SizedBox(
               height: 10,
             ),
+            TextField(
+              controller: _displayNameController,
+              cursorColor: Colors.yellow,
+              decoration: const InputDecoration(
+                labelText: 'What should we call you?',
+                border: OutlineInputBorder(),
+                focusColor: Colors.yellow,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    width: 2,
+                    color: Color.fromARGB(
+                      255,
+                      251,
+                      230,
+                      1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
             SizedBox(
               width: double.infinity,
               child: FloatingActionButton(
                 onPressed: () {
                   context.read<CompleteProfileBloc>().add(
                       CompleteProfileSaveEvent(
+                          username: _displayNameController.text,
                           displayName: _leetcodeIdController.text));
                 },
                 backgroundColor: Colors.yellow,

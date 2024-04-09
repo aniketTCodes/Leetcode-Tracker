@@ -34,7 +34,7 @@ class Data {
     Map<String, dynamic> toJson() => {
         "matchedUser": matchedUser.toJson(),
     };
-}
+} 
 
 class MatchedUser {
     String username;

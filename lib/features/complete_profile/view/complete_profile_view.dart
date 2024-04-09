@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/features/complete_profile/bloc/bloc/complete_profile_bloc.dart';
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile.dart';
+import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
 
 class CompleteProfileView extends StatelessWidget {
@@ -27,6 +28,7 @@ class CompleteProfileView extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is CompleteProfileDoneState) {
+            context.read<DashboardBloc>().add(InitDashBoardEvent());
             Navigator.of(context).popAndPushNamed(HomeView.route);
           }
           if (state is CompleteProfileInitial && state.hasErrors) {

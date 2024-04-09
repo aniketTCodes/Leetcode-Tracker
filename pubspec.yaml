@@ -19,6 +19,7 @@ dependencies:
   flutter_native_splash: ^2.4.0
   get_it: ^7.6.7
   http: ^1.2.1
+  percent_indicator: ^4.2.3
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +28,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: NotoSerif
+      fonts:
+        - asset: fonts/noto_serif.ttf
+    - family: Bitter
+      fonts:
+        - asset: fonts/bitter.ttf
+    
+    
+
+
