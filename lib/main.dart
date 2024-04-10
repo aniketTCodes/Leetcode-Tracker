@@ -10,6 +10,7 @@ import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile_view.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
+import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
 import 'package:leetcode_tracker/firebase_options.dart';
 
 void main() async {
@@ -45,7 +46,8 @@ class MainApp extends StatelessWidget {
         routes: {
           AuthView.route: (context) => const AuthView(),
           CompleteProfileView.route: (context) => const CompleteProfileView(),
-          HomeView.route: (context) => const HomeView()
+          HomeView.route: (context) => const HomeView(),
+          SolutionView.route:(context) => const SolutionView()
         },
       ),
     );

@@ -9,7 +9,7 @@ import 'dart:developer' as dev show log;
 
 abstract class DashboardService {
   Future<LeetcodeDataModel> getLeetcodeStats();
-  Future<bool> updateLeetcodeStats(LeetcodeDataModel model);
+  Future<void> updateLeetcodeStats(LeetcodeDataModel model);
 }
 
 class DashboardServiceImpl extends DashboardService {
@@ -42,8 +42,17 @@ class DashboardServiceImpl extends DashboardService {
   }
 
   @override
-  Future<bool> updateLeetcodeStats(LeetcodeDataModel model) {
-    // TODO: implement updateLeetcodeStats
-    throw UnimplementedError();
+  Future<void> updateLeetcodeStats(LeetcodeDataModel model) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .set(model.toFirestore());
+    } on FirebaseException catch (e) {
+      throw MyExpection(message: e.code);
+    } on Exception catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
   }
 }

@@ -16,4 +16,13 @@ class DashboardRepository {
       return Left(Faliure(e.message));
     }
   }
+
+  Future<Either<Faliure, void>> updateLeetcodeStats(
+      LeetcodeDataModel model) async {
+    try {
+      return Right(await service.updateLeetcodeStats(model));
+    } on MyExpection catch (e) {
+      return Left(Faliure(e.message));
+    }
+  }
 }
