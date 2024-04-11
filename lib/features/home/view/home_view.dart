@@ -6,6 +6,7 @@ import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/dashboard/view/dashboard_view.dart';
+import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
 
 class HomeView extends StatelessWidget {
@@ -20,6 +21,7 @@ class HomeView extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           backgroundColor: matteBlack,
           onPressed: () {
+            context.read<SolutionBloc>().add(SolutionInitEvent());
             Navigator.pushNamed(context, SolutionView.route);
           },
           child: const Icon(

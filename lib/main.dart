@@ -9,7 +9,11 @@ import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile_view.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
+import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_repository.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
+import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
+import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
+import 'package:leetcode_tracker/features/solutions/view/solution_add_edit_view.dart';
 import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
 import 'package:leetcode_tracker/firebase_options.dart';
 
@@ -38,6 +42,12 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => DashboardBloc()..add(InitDashBoardEvent()),
+        ),
+        BlocProvider(
+          create: (context) => SolutionBloc(
+              dashboardRepository: getIt<DashboardRepository>(),
+              firebaseAuth: getIt<FirebaseAuth>(),
+              leetcodeRespository: getIt<LeetcodeRespository>()),
         )
       ],
       child: MaterialApp(
@@ -47,7 +57,7 @@ class MainApp extends StatelessWidget {
           AuthView.route: (context) => const AuthView(),
           CompleteProfileView.route: (context) => const CompleteProfileView(),
           HomeView.route: (context) => const HomeView(),
-          SolutionView.route:(context) => const SolutionView()
+          SolutionView.route: (context) => const SolutionView()
         },
       ),
     );
