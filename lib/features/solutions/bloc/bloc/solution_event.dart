@@ -8,3 +8,9 @@ final class SolutionInitEvent extends SolutionEvent{
 
   SolutionInitEvent({this.question});
 }
+
+final class SearchQuestionEvent extends SolutionEvent{
+  final String searchKeyword;
+
+  SearchQuestionEvent({required this.searchKeyword});
+}

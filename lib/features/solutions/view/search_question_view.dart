@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
+import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
+import 'dart:developer' as dev show log;
 
 class SearchQuestionView extends StatefulWidget {
-  final List<Question> questions;
-  const SearchQuestionView({super.key, required this.questions});
+  final List<Question>? questions;
+  final String loadingMessage;
+  const SearchQuestionView(
+      {super.key, required this.questions, required this.loadingMessage});
 
   @override
   State<SearchQuestionView> createState() => _SearchQuestionViewState();
@@ -13,12 +18,11 @@ class SearchQuestionView extends StatefulWidget {
 class _SearchQuestionViewState extends State<SearchQuestionView> {
   final TextEditingController _searchKeywordController =
       TextEditingController();
-  List<Question> questions = [];
 
   @override
-  void initState() {
-    questions.addAll(widget.questions);
-    super.initState();
+  void dispose() {
+    _searchKeywordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -53,7 +57,6 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
               style: TextStyle(color: appYellow, fontSize: 18),
             ),
             TextField(
-              keyboardType: TextInputType.multiline,
               controller: _searchKeywordController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
@@ -73,7 +76,7 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
                     color: appYellow,
                   ),
                 ),
-                hintText: 'e.g. - Two Sum',
+                hintText: 'e.g. - 3Sum',
                 hintStyle: TextStyle(
                     color: Color.fromARGB(255, 143, 125, 125),
                     fontStyle: FontStyle.italic,
@@ -85,60 +88,105 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
               cursorColor: appYellow,
             ),
             const SizedBox(
+              height: 5,
+            ),
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width - 16,
+                child: FloatingActionButton(
+                  backgroundColor: appYellow,
+                  onPressed: () {
+                    if (widget.questions != null) {
+                      context.read<SolutionBloc>().add(SearchQuestionEvent(
+                          searchKeyword: _searchKeywordController.text));
+                    }
+                  },
+                  child: const Text('Search'),
+                ),
+              ),
+            ),
+            const SizedBox(
               height: 10,
             ),
             const Text(
-              'Recent AC Solutions',
+              'Problems',
               style: TextStyle(
                 color: appYellow,
                 fontSize: 16,
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: widget.questions.length,
-                itemBuilder: (context, index) {
-                  final quesiton = widget.questions[index];
-                  return Card(
-                    color: const Color.fromARGB(255, 81, 73, 68),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            "${quesiton.frontendQuestionId}. ${quesiton.title}",
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
-                          ),
-                          const SizedBox(
-                            height: 2,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                quesiton.difficulty,
-                                style: TextStyle(
-                                    color: getColor(quesiton.difficulty),
-                                    fontSize: 13,
-                                    fontStyle: FontStyle.italic),
+              child: Builder(
+                builder: (context) {
+                  if (widget.questions != null) {
+                    return ListView.builder(
+                      itemCount: widget.questions!.length,
+                      itemBuilder: (context, index) {
+                        final quesiton = widget.questions![index];
+                        return GestureDetector(
+                          onTap: () {
+                            dev.log(
+                                "Tapped on ${widget.questions![index].title}");
+                          },
+                          child: Card(
+                            color: const Color.fromARGB(255, 81, 73, 68),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    "${quesiton.frontendQuestionId}. ${quesiton.title}",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ),
+                                  const SizedBox(
+                                    height: 2,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        quesiton.difficulty,
+                                        style: TextStyle(
+                                            color:
+                                                getColor(quesiton.difficulty),
+                                            fontSize: 13,
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        quesiton.acRate.toStringAsFixed(1),
+                                        style: const TextStyle(
+                                          color: appYellow,
+                                          fontSize: 12,
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                quesiton.acRate.toStringAsFixed(1),
-                                style: const TextStyle(
-                                  color: appYellow,
-                                  fontSize: 12,
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: appYellow,
+                        ),
+                        Text(
+                          widget.loadingMessage,
+                          style: const TextStyle(color: appYellow),
+                        )
+                      ],
                     ),
                   );
                 },

@@ -13,7 +13,8 @@ class SolutionView extends StatelessWidget {
     return BlocConsumer<SolutionBloc, SolutionState>(
       builder: (context, state) {
         if (state is SolutionSearchState) {
-          return SearchQuestionView(questions: state.questions);
+          return SearchQuestionView(
+              questions: state.questions, loadingMessage: state.loadingMessage);
         }
         return const Scaffold(
           backgroundColor: matteBlack,
@@ -24,7 +25,14 @@ class SolutionView extends StatelessWidget {
           ),
         );
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is SolutionSearchState && state.hasErrors) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.errorMessage!),
+            backgroundColor: const Color.fromARGB(255, 237, 78, 29),
+          ));
+        }
+      },
     );
   }
 }

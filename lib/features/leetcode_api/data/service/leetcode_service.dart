@@ -10,8 +10,6 @@ import 'dart:developer' as dev show log;
 
 import 'package:leetcode_tracker/features/solutions/data/models/recent_ac_model.dart';
 
-// Future<RecentAcModel> getRecentAcSubmissions(String username);
-// Future<ProblemSetModel> getProblemSet(String searchKeyword,int limit);
 class LeetcodeService {
   Future<ProblemSetModel> getProblemSet(String searchKeyword, int limit) async {
     try {
