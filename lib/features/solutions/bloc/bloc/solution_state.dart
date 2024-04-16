@@ -12,44 +12,44 @@ class SolutionSearchState extends SolutionState {
   final String loadingMessage;
 
   SolutionSearchState(
-      {required this.questions, this.hasErrors = false, this.errorMessage,required this.loadingMessage});
+      {required this.questions,
+      this.hasErrors = false,
+      this.errorMessage,
+      required this.loadingMessage});
 
   SolutionSearchState copyWith(String message) {
     return SolutionSearchState(
-        questions: questions, hasErrors: true, errorMessage: message,loadingMessage: loadingMessage);
+        questions: questions,
+        hasErrors: true,
+        errorMessage: message,
+        loadingMessage: loadingMessage);
   }
+}
+
+class SolutionErrorState extends SolutionState {
+  final String errorMessage;
+
+  SolutionErrorState({required this.errorMessage});
 }
 
 class SolutionAddEditState extends SolutionState {
   final Question question;
-  final String? intuition;
-  final String? approach;
-  final String? complexity;
+  final SolutionModel? solution;
   final bool hasErrors;
   final String? errorMessage;
 
   SolutionAddEditState(
       {required this.question,
-      this.intuition,
-      this.approach,
-      this.complexity,
+      this.solution,
       this.hasErrors = false,
       this.errorMessage});
-
-  SolutionAddEditState copyWith(String message) {
+  SolutionAddEditState copyWith(String errorMessage) {
     return SolutionAddEditState(
         question: question,
-        intuition: intuition,
-        approach: approach,
-        complexity: complexity,
+        solution: solution,
         hasErrors: true,
-        errorMessage: message);
+        errorMessage: errorMessage);
   }
 }
 
-class SolutionErrorState extends SolutionState{
-  final String errorMessage;
-
-  SolutionErrorState({required this.errorMessage});
-
-}
+class SolutionDoneState extends SolutionState {}

@@ -14,3 +14,20 @@ final class SearchQuestionEvent extends SolutionEvent{
 
   SearchQuestionEvent({required this.searchKeyword});
 }
+
+final class OnQuesitonSelectEvent extends SolutionEvent{
+  final Question question;
+
+  OnQuesitonSelectEvent({required this.question});
+}
+
+final class SaveSolutionEvent extends SolutionEvent{
+  final Question question;
+  final String problemGoal;
+  final String optimization;
+  final String rationale;
+  final List<String> tags;
+
+  SaveSolutionEvent({required this.question, required this.problemGoal, required this.optimization, required this.rationale, required this.tags});
+
+} 

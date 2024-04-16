@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/complete_profile/bloc/bloc/complete_profile_bloc.dart';
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
@@ -21,8 +22,11 @@ class CompleteProfileView extends StatelessWidget {
           }
 
           return const Scaffold(
+            backgroundColor: matteBlack,
             body: Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: appYellow,
+              ),
             ),
           );
         },

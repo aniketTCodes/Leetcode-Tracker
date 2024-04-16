@@ -13,6 +13,7 @@ import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_re
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
+import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
 import 'package:leetcode_tracker/features/solutions/view/solution_add_edit_view.dart';
 import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
 import 'package:leetcode_tracker/firebase_options.dart';
@@ -45,9 +46,11 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SolutionBloc(
-              dashboardRepository: getIt<DashboardRepository>(),
-              firebaseAuth: getIt<FirebaseAuth>(),
-              leetcodeRespository: getIt<LeetcodeRespository>()),
+            dashboardRepository: getIt<DashboardRepository>(),
+            firebaseAuth: getIt<FirebaseAuth>(),
+            leetcodeRespository: getIt<LeetcodeRespository>(),
+            solutionRepository: getIt<SolutionRepository>(),
+          ),
         )
       ],
       child: MaterialApp(

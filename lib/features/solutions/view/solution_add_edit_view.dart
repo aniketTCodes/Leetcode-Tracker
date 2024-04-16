@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
+import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
+import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
+import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
 
 class SolutionAddEditView extends StatefulWidget {
-  static const route = '/solution';
-  const SolutionAddEditView({super.key});
+  final Question question;
+  final SolutionModel? solution;
+
+  const SolutionAddEditView({super.key, required this.question, this.solution});
 
   @override
   State<SolutionAddEditView> createState() => _AddEditSolutionState();
 }
 
 class _AddEditSolutionState extends State<SolutionAddEditView> {
-  late TextEditingController _intuitionController;
-  late TextEditingController _aproachController;
-  late TextEditingController _complexityController;
+  late TextEditingController _goalController;
+  late TextEditingController _optimizationController;
+  late TextEditingController _rationaleController;
+  late List<String> tags;
   @override
   void initState() {
-    _intuitionController = TextEditingController();
-    _aproachController = TextEditingController();
-    _complexityController = TextEditingController();
+    tags = widget.solution?.tags ?? [];
+    _goalController =
+        TextEditingController(text: widget.solution?.problemGoal ?? '');
+    _optimizationController =
+        TextEditingController(text: widget.solution?.optimization ?? '');
+    _rationaleController =
+        TextEditingController(text: widget.solution?.rationale ?? '');
     super.initState();
   }
 
@@ -27,9 +39,9 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
       appBar: AppBar(
         shadowColor: matteBlack,
         surfaceTintColor: matteBlack,
-        title: const Text(
-          'Add solution',
-          style: TextStyle(
+        title: Text(
+          widget.question.title,
+          style: const TextStyle(
             color: appYellow,
             fontSize: 20,
           ),
@@ -53,38 +65,59 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Question',
-              style: TextStyle(
-                color: appYellow,
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
-              ),
-            ),
-            DropdownMenu(
-              enableSearch: true,
-
-              width: MediaQuery.of(context).size.width - 16,
-              dropdownMenuEntries: const [],
-              inputDecorationTheme: const InputDecorationTheme(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                  Radius.circular(
-                    20,
-                  ),
-                )),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Intuition',
+                      'Tags',
+                      style: TextStyle(
+                        color: appYellow,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Wrap(
+                        spacing: 8,
+                        children: <Widget>[
+                              Chip(
+                                deleteIcon: const Icon(
+                                  Icons.add_circle,
+                                  color: matteBlack,
+                                ),
+                                label: const Text(
+                                  'Add Tags',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: accentBlack,
+                                shadowColor: Colors.transparent,
+                                surfaceTintColor: Colors.transparent,
+                                onDeleted: () {},
+                              )
+                            ] +
+                            tags
+                                .map(
+                                  (e) => Chip(
+                                    deleteIcon: const Icon(
+                                      Icons.close_rounded,
+                                      color: matteBlack,
+                                    ),
+                                    backgroundColor: accentBlack,
+                                    label: Text(
+                                      e,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    onDeleted: () {},
+                                  ),
+                                )
+                                .toList()),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'Problem Goal',
                       style: TextStyle(
                         color: appYellow,
                         fontWeight: FontWeight.w500,
@@ -94,7 +127,51 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                     TextField(
                       maxLines: 8,
                       keyboardType: TextInputType.multiline,
-                      controller: _intuitionController,
+                      controller: _goalController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              20,
+                            ),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              15,
+                            ),
+                          ),
+                          borderSide: BorderSide(
+                            color: appYellow,
+                          ),
+                        ),
+                        hintText: 'Describle the goal of problem',
+                        hintStyle: TextStyle(
+                            color: Color.fromARGB(255, 143, 125, 125),
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      cursorColor: appYellow,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'Optimization',
+                      style: TextStyle(
+                        color: appYellow,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
+                    ),
+                    TextField(
+                      maxLines: 10,
+                      keyboardType: TextInputType.multiline,
+                      controller: _optimizationController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -114,7 +191,7 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                           ),
                         ),
                         hintText:
-                            'Ideas or patterns that helped you figuring out the approach',
+                            'Write the about your initial approach and how you optimized it',
                         hintStyle: TextStyle(
                             color: Color.fromARGB(255, 143, 125, 125),
                             fontStyle: FontStyle.italic,
@@ -129,7 +206,7 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                       height: 10,
                     ),
                     const Text(
-                      'Approach',
+                      'Rationale',
                       style: TextStyle(
                         color: appYellow,
                         fontWeight: FontWeight.w500,
@@ -139,7 +216,7 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                     TextField(
                       maxLines: 15,
                       keyboardType: TextInputType.multiline,
-                      controller: _aproachController,
+                      controller: _rationaleController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -158,51 +235,7 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                             color: appYellow,
                           ),
                         ),
-                        hintText: 'Pesudo code, Algorithm, Optimizations',
-                        hintStyle: TextStyle(
-                            color: Color.fromARGB(255, 143, 125, 125),
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.normal),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                      cursorColor: appYellow,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      'Complexity',
-                      style: TextStyle(
-                        color: appYellow,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
-                      ),
-                    ),
-                    TextField(
-                      maxLines: 4,
-                      keyboardType: TextInputType.multiline,
-                      controller: _complexityController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(
-                              20,
-                            ),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(
-                              15,
-                            ),
-                          ),
-                          borderSide: BorderSide(
-                            color: appYellow,
-                          ),
-                        ),
-                        hintText: 'Complexity of your approach',
+                        hintText: 'Describle your approach',
                         hintStyle: TextStyle(
                             color: Color.fromARGB(255, 143, 125, 125),
                             fontStyle: FontStyle.italic,
@@ -220,7 +253,14 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                       width: MediaQuery.of(context).size.width - 16,
                       child: FloatingActionButton(
                         backgroundColor: appYellow,
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<SolutionBloc>().add(SaveSolutionEvent(
+                              question: widget.question,
+                              problemGoal: _goalController.text,
+                              optimization: _optimizationController.text,
+                              rationale: _rationaleController.text,
+                              tags: tags));
+                        },
                         child: const Text('Done'),
                       ),
                     ),

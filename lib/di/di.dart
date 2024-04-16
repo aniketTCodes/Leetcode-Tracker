@@ -5,6 +5,8 @@ import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_re
 import 'package:leetcode_tracker/features/dashboard/data/service/dashboard_service.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/service/leetcode_service.dart';
+import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
+import 'package:leetcode_tracker/features/solutions/data/service/solution_service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -19,4 +21,6 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<DashboardService>(() => DashboardServiceImpl());
   getIt.registerLazySingleton<DashboardRepository>(
       () => DashboardRepository(service: getIt<DashboardService>()));
+  getIt.registerLazySingleton<SolutionService>(() => SolutionServiceImpl());
+  getIt.registerLazySingleton<SolutionRepository>(() => SolutionRepository(service: getIt<SolutionService>()));
 }

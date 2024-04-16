@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/email_verification_view.dart';
 import 'package:leetcode_tracker/features/auth/view/link_leetcode_view.dart';
@@ -17,6 +18,7 @@ class AuthView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: matteBlack,
       appBar: AppBar(
         title: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
@@ -45,7 +47,7 @@ class AuthView extends StatelessWidget {
             if (state is VerifyEmailState) {
               return const VerificationView();
             }
-            return const CircularProgressIndicator();
+            return const CircularProgressIndicator(color: appYellow);
           },
           listener: (context, state) {
             if (state is RegisterState && state.hasErrors) {

@@ -125,8 +125,9 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
                         final quesiton = widget.questions![index];
                         return GestureDetector(
                           onTap: () {
-                            dev.log(
-                                "Tapped on ${widget.questions![index].title}");
+                            context.read<SolutionBloc>().add(
+                                OnQuesitonSelectEvent(
+                                    question: widget.questions![index]));
                           },
                           child: Card(
                             color: const Color.fromARGB(255, 81, 73, 68),
@@ -182,9 +183,15 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
                         const CircularProgressIndicator(
                           color: appYellow,
                         ),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         Text(
                           widget.loadingMessage,
-                          style: const TextStyle(color: appYellow),
+                          style: const TextStyle(
+                            color: appYellow,
+                            fontSize: 10,
+                          ),
                         )
                       ],
                     ),

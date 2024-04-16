@@ -6,6 +6,8 @@ import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_re
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/recent_ac_model.dart';
+import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
+import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
 import 'package:meta/meta.dart';
 import 'dart:developer' as dev show log;
 part 'solution_event.dart';
@@ -15,15 +17,23 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
   final DashboardRepository dashboardRepository;
   final FirebaseAuth firebaseAuth;
   final LeetcodeRespository leetcodeRespository;
+  final SolutionRepository solutionRepository;
 
   SolutionBloc(
       {required this.dashboardRepository,
       required this.firebaseAuth,
-      required this.leetcodeRespository})
+      required this.leetcodeRespository,
+      required this.solutionRepository})
       : super(SolutionLoadingState()) {
     on<SolutionInitEvent>((event, emit) => _initEvent(event, emit));
     on<SearchQuestionEvent>(
       (event, emit) => _searchQuestionsEvent(event, emit),
+    );
+    on<OnQuesitonSelectEvent>(
+      (event, emit) => _onSelectQuesitionEvent(event, emit),
+    );
+    on<SaveSolutionEvent>(
+      (event, emit) => _onSaveSolutionEvent(event, emit),
     );
   }
 
@@ -94,5 +104,50 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
     emit(SolutionSearchState(
         questions: problemSet!.data.problemsetQuestionList.questions,
         loadingMessage: ''));
+  }
+
+  _onSelectQuesitionEvent(
+      OnQuesitonSelectEvent event, Emitter<SolutionState> emit) async {
+    final prevState = state as SolutionSearchState;
+    emit(SolutionLoadingState());
+    final hasSolutionResult =
+        await solutionRepository.hasSolution(event.question.titleSlug);
+    bool? hasSolution;
+    hasSolutionResult.fold(
+        (l) => {emit(prevState.copyWith(l.message))}, (r) => hasSolution = r);
+    if (hasSolution == null) return;
+    if (hasSolution == false) {
+      emit(SolutionAddEditState(question: event.question));
+    } else {
+      final getSolutionResult =
+          await solutionRepository.getSolution(event.question.titleSlug);
+      SolutionModel? solution;
+      getSolutionResult.fold(
+          (l) => {emit(prevState.copyWith(l.message))}, (r) => solution = r);
+      if (solution == null) return;
+      emit(SolutionAddEditState(question: event.question, solution: solution));
+    }
+  }
+
+  _onSaveSolutionEvent(
+      SaveSolutionEvent event, Emitter<SolutionState> emit) async {
+    final prevState = state as SolutionAddEditState;
+    if (event.problemGoal.isEmpty ||
+        event.optimization.isEmpty ||
+        event.rationale.isEmpty) {
+      emit(prevState.copyWith(emptySolutionFieldErrorMessage));
+      return;
+    }
+    final addSolutionResult = await solutionRepository.setSolution(
+        SolutionModel(
+            questionTitle: event.question.title,
+            difficulty: event.question.difficulty,
+            problemGoal: event.problemGoal,
+            optimization: event.optimization,
+            rationale: event.rationale,
+            tags: event.tags),
+        event.question.titleSlug);
+    addSolutionResult.fold((l) => emit(prevState.copyWith(l.message)),
+        (r) => emit(SolutionDoneState()));
   }
 }
