@@ -1,16 +1,17 @@
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/di/di.dart';
+import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/tags/bloc/bloc/tags_bloc.dart';
 import 'package:leetcode_tracker/features/tags/data/model/tag_model.dart';
 import 'package:leetcode_tracker/features/tags/data/repository/tag_repository.dart';
+import 'package:leetcode_tracker/features/tags/view/color_indicator.dart';
 
 class TagAlertDialogueView extends StatefulWidget {
   final List<TagModel> solutionTags;
-  const TagAlertDialogueView({super.key,required this.solutionTags});
+  const TagAlertDialogueView({super.key, required this.solutionTags});
 
   @override
   State<TagAlertDialogueView> createState() => _TagAlertDialogueViewState();
@@ -18,6 +19,7 @@ class TagAlertDialogueView extends StatefulWidget {
 
 class _TagAlertDialogueViewState extends State<TagAlertDialogueView> {
   Color selectedColor = Colors.white;
+  TextEditingController _tagController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -36,9 +38,11 @@ class _TagAlertDialogueViewState extends State<TagAlertDialogueView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const TextField(
+                    TextField(
+                      controller: _tagController,
                       cursorColor: appYellow,
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         isDense: true,
                         hintText: 'Enter Tag Name',
                         hintStyle: TextStyle(color: Colors.grey),
@@ -94,7 +98,16 @@ class _TagAlertDialogueViewState extends State<TagAlertDialogueView> {
                       width: double.maxFinite,
                       child: FloatingActionButton(
                         backgroundColor: appYellow,
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<SolutionBloc>().add(AddTagEvent(
+                              tag: TagModel(
+                                  name: _tagController.text,
+                                  a: selectedColor.alpha,
+                                  r: selectedColor.red,
+                                  g: selectedColor.green,
+                                  b: selectedColor.blue)));
+                          _tagController.clear();
+                        },
                         child: const Text('Add'),
                       ),
                     ),

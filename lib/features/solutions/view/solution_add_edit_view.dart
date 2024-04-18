@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
+import 'package:leetcode_tracker/features/tags/data/model/tag_model.dart';
+import 'package:leetcode_tracker/features/tags/view/tag_alert_view.dart';
 
 class SolutionAddEditView extends StatefulWidget {
   final Question question;
@@ -20,10 +21,9 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
   late TextEditingController _goalController;
   late TextEditingController _optimizationController;
   late TextEditingController _rationaleController;
-  late List<String> tags;
+  late List<TagModel> tags = widget.solution?.tags ?? [];
   @override
   void initState() {
-    tags = widget.solution?.tags ?? [];
     _goalController =
         TextEditingController(text: widget.solution?.problemGoal ?? '');
     _optimizationController =
@@ -93,7 +93,42 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                                 backgroundColor: accentBlack,
                                 shadowColor: Colors.transparent,
                                 surfaceTintColor: Colors.transparent,
-                                onDeleted: () {},
+                                onDeleted: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                          backgroundColor: matteBlack,
+                                          title: const Text(
+                                            'Add Tag',
+                                            style: TextStyle(
+                                                color: appYellow, fontSize: 18),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  tags =
+                                                      widget.solution?.tags ??
+                                                          tags;
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text(
+                                                'Done',
+                                                style: TextStyle(
+                                                  color: appYellow,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                          content: TagAlertDialogueView(
+                                            solutionTags: tags,
+                                          ));
+                                    },
+                                  );
+                                },
                               )
                             ] +
                             tags
@@ -105,11 +140,17 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                                     ),
                                     backgroundColor: accentBlack,
                                     label: Text(
-                                      e,
-                                      style:
-                                          const TextStyle(color: Colors.white),
+                                      e.name,
+                                      style: TextStyle(
+                                        color:
+                                            Color.fromARGB(e.a, e.r, e.g, e.b),
+                                      ),
                                     ),
-                                    onDeleted: () {},
+                                    onDeleted: () {
+                                      setState(() {
+                                        tags.remove(e);
+                                      });
+                                    },
                                   ),
                                 )
                                 .toList()),

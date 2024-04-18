@@ -8,6 +8,7 @@ import 'package:leetcode_tracker/features/solutions/data/models/problem_set_mode
 import 'package:leetcode_tracker/features/solutions/data/models/recent_ac_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
+import 'package:leetcode_tracker/features/tags/data/model/tag_model.dart';
 import 'package:meta/meta.dart';
 import 'dart:developer' as dev show log;
 part 'solution_event.dart';
@@ -34,6 +35,9 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
     );
     on<SaveSolutionEvent>(
       (event, emit) => _onSaveSolutionEvent(event, emit),
+    );
+    on<AddTagEvent>(
+      (event, emit) => onAddTagEvent(event, emit),
     );
   }
 
@@ -149,5 +153,27 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
         event.question.titleSlug);
     addSolutionResult.fold((l) => emit(prevState.copyWith(l.message)),
         (r) => emit(SolutionDoneState()));
+  }
+
+  onAddTagEvent(AddTagEvent event, Emitter<SolutionState> emit) {
+    final prevState = state as SolutionAddEditState;
+    emit(SolutionLoadingState());
+    emit(SolutionAddEditState(
+        question: prevState.question,
+        solution: prevState.solution == null
+            ? SolutionModel(
+                questionTitle: prevState.question.title,
+                difficulty: prevState.question.difficulty,
+                problemGoal: "",
+                optimization: "",
+                rationale: "",
+                tags: [event.tag])
+            : SolutionModel(
+                questionTitle: prevState.solution!.questionTitle,
+                difficulty: prevState.solution!.difficulty,
+                problemGoal: prevState.solution!.problemGoal,
+                optimization: prevState.solution!.optimization,
+                rationale: prevState.solution!.rationale,
+                tags: [event.tag] + prevState.solution!.tags)));
   }
 }
