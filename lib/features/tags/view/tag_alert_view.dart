@@ -114,28 +114,6 @@ class _TagAlertDialogueViewState extends State<TagAlertDialogueView> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const Text(
-                      'Your Tags',
-                      style: TextStyle(
-                        color: appYellow,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Builder(
-                        builder: (context) {
-                          return const Text(
-                            'No Tags found',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),

@@ -5,6 +5,8 @@ import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_re
 import 'package:leetcode_tracker/features/dashboard/data/service/dashboard_service.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/service/leetcode_service.dart';
+import 'package:leetcode_tracker/features/revist_solutions/data/repository/revisit_solution_repository.dart';
+import 'package:leetcode_tracker/features/revist_solutions/data/revisit_solution_service.dart';
 import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
 import 'package:leetcode_tracker/features/solutions/data/service/solution_service.dart';
 import 'package:leetcode_tracker/features/tags/data/repository/tag_repository.dart';
@@ -29,4 +31,8 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<TagService>(() => TagServiceImpl());
   getIt.registerLazySingleton<TagRepository>(
       () => TagRepository(service: getIt<TagService>()));
+      
+  getIt.registerLazySingleton<RevisitSolutionService>(() => RevisitSolutionService());
+  getIt.registerLazySingleton<RevisitSolutionRepository>(
+      () => RevisitSolutionRepository(service: getIt<RevisitSolutionService>()));
 }

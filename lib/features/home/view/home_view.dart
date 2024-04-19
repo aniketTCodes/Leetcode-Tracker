@@ -6,7 +6,10 @@ import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
 import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/dashboard/view/dashboard_view.dart';
+import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
+import 'package:leetcode_tracker/features/revist_solutions/view/revisit_solution_view.dart';
 import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
+import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
 import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
 
 class HomeView extends StatelessWidget {
@@ -68,6 +71,66 @@ class HomeView extends StatelessWidget {
                   userState: null,
                 );
               },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            BlocProvider(
+              create: (context) =>
+                  RevisitSolutionBloc()..add(GetUserSolutionEvent()),
+              child: BlocConsumer<RevisitSolutionBloc, RevisitSolutionState>(
+                builder: (context, state) {
+                  if (state is RevisitSolutionsLoadedState) {
+                    return Expanded(
+                        child: ListView.builder(
+                      itemCount: state.solutions.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                                RevisitSolutionview.route,
+                                arguments: state.solutions[index]);
+                          },
+                          child: Card(
+                            color: accentBlack,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    state.solutions[index].questionTitle,
+                                    style: const TextStyle(
+                                        color: appYellow,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'NotoSerif'),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    state.solutions[index].difficulty,
+                                    style: TextStyle(
+                                        color: getColor(
+                                            state.solutions[index].difficulty)),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ));
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: matteBlack,
+                    ),
+                  );
+                },
+                listener: (context, state) {},
+              ),
             )
           ],
         ),
