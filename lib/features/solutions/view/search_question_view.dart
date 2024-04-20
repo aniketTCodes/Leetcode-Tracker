@@ -190,7 +190,7 @@ class _SearchQuestionViewState extends State<SearchQuestionView> {
                           widget.loadingMessage,
                           style: const TextStyle(
                             color: appYellow,
-                            fontSize: 10,
+                            fontSize: 16,
                           ),
                         )
                       ],
