@@ -1,3 +1,2 @@
-# leetcode_tracker
-
-A new Flutter project.
+# Leetcode Tracker
+Flutter application to track leetcode solutions and revist them anywhere you are.
