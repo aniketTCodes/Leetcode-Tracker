@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
@@ -22,6 +25,7 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
   late TextEditingController _optimizationController;
   late TextEditingController _rationaleController;
   late List<TagModel> tags = widget.solution?.tags ?? [];
+  List<File> codeSnippets = [];
   @override
   void initState() {
     _goalController =
@@ -79,81 +83,80 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                       ),
                     ),
                     Wrap(
-                        spacing: 8,
-                        children: <Widget>[
-                              Chip(
-                                deleteIcon: const Icon(
-                                  Icons.add_circle,
-                                  color: matteBlack,
-                                ),
-                                label: const Text(
-                                  'Add Tags',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: accentBlack,
-                                shadowColor: Colors.transparent,
-                                surfaceTintColor: Colors.transparent,
-                                onDeleted: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                          backgroundColor: matteBlack,
-                                          title: const Text(
-                                            'Add Tag',
-                                            style: TextStyle(
-                                                color: appYellow, fontSize: 18),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  tags =
-                                                      widget.solution?.tags ??
-                                                          tags;
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text(
-                                                'Done',
-                                                style: TextStyle(
-                                                  color: appYellow,
-                                                  fontSize: 18,
-                                                ),
+                      spacing: 8,
+                      children: <Widget>[
+                            Chip(
+                              deleteIcon: const Icon(
+                                Icons.add_circle,
+                                color: matteBlack,
+                              ),
+                              label: const Text(
+                                'Add Tags',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: accentBlack,
+                              shadowColor: Colors.transparent,
+                              surfaceTintColor: Colors.transparent,
+                              onDeleted: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                        backgroundColor: matteBlack,
+                                        title: const Text(
+                                          'Add Tag',
+                                          style: TextStyle(
+                                              color: appYellow, fontSize: 18),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                tags = widget.solution?.tags ??
+                                                    tags;
+                                              });
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text(
+                                              'Done',
+                                              style: TextStyle(
+                                                color: appYellow,
+                                                fontSize: 18,
                                               ),
-                                            )
-                                          ],
-                                          content: TagAlertDialogueView(
-                                            solutionTags: tags,
-                                          ));
-                                    },
-                                  );
-                                },
-                              )
-                            ] +
-                            tags
-                                .map(
-                                  (e) => Chip(
-                                    deleteIcon: const Icon(
-                                      Icons.close_rounded,
-                                      color: matteBlack,
-                                    ),
-                                    backgroundColor: accentBlack,
-                                    label: Text(
-                                      e.name,
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromARGB(e.a, e.r, e.g, e.b),
-                                      ),
-                                    ),
-                                    onDeleted: () {
-                                      setState(() {
-                                        tags.remove(e);
-                                      });
-                                    },
+                                            ),
+                                          )
+                                        ],
+                                        content: TagAlertDialogueView(
+                                          solutionTags: tags,
+                                        ));
+                                  },
+                                );
+                              },
+                            )
+                          ] +
+                          tags
+                              .map(
+                                (e) => Chip(
+                                  deleteIcon: const Icon(
+                                    Icons.close_rounded,
+                                    color: matteBlack,
                                   ),
-                                )
-                                .toList()),
+                                  backgroundColor: accentBlack,
+                                  label: Text(
+                                    e.name,
+                                    style: TextStyle(
+                                      color: Color.fromARGB(e.a, e.r, e.g, e.b),
+                                    ),
+                                  ),
+                                  onDeleted: () {
+                                    setState(() {
+                                      tags.remove(e);
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -288,6 +291,70 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
                       cursorColor: appYellow,
                     ),
                     const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'Code Snippet',
+                      style: TextStyle(
+                        color: appYellow,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Wrap(
+                      spacing: 5,
+                      children: [
+                            Container(
+                              width: 55,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(color: appYellow),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5))),
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: appYellow,
+                                ),
+                                onPressed: () {
+                                  pickImage();
+                                },
+                              ),
+                            ),
+                          ] +
+                          codeSnippets
+                              .map(
+                                (e) => Container(
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: FileImage(e),
+                                          fit: BoxFit.fill),
+                                      border: Border.all(
+                                          color: appYellow, width: 0.5),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(5))),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.cancel,
+                                      color: appYellow,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        codeSnippets.remove(e);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                    ),
+                    const SizedBox(
                       height: 20,
                     ),
                     SizedBox(
@@ -316,5 +383,18 @@ class _AddEditSolutionState extends State<SolutionAddEditView> {
         ),
       ),
     );
+  }
+
+  Future pickImage() async {
+    final returnedImages =
+        await ImagePicker().pickMultiImage(imageQuality: 20, limit: 5);
+    final files = returnedImages
+        .map(
+          (e) => File(e.path),
+        )
+        .toList();
+    setState(() {
+      codeSnippets.addAll(files);
+    });
   }
 }
