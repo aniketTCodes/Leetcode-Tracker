@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:leetcode_tracker/core/constants/errors.dart';
 import 'package:leetcode_tracker/core/exception/exception.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
@@ -13,11 +16,14 @@ abstract class SolutionService {
   Future<void> setSolution(SolutionModel solution, String titleSlug);
   //Fetch solution from ID
   Future<SolutionModel> getSolution(String titleSlug);
+
+  Future<void> addImages(List<File> codeSnippets,String titleSlug);
 }
 
 class SolutionServiceImpl implements SolutionService {
   final firestore = FirebaseFirestore.instance;
   final firebaseAuth = FirebaseAuth.instance;
+  final firebaseStorage = FirebaseStorage.instance;
   @override
   Future<SolutionModel> getSolution(String titleSlug) async {
     final uid = firebaseAuth.currentUser!.uid;
@@ -71,6 +77,16 @@ class SolutionServiceImpl implements SolutionService {
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+  
+  @override
+  Future<void> addImages(List<File> codeSnippets, String titleSlug) async{
+    final uid = firebaseAuth.currentUser!.uid;
+    try {
+      firebaseStorage.ref()
+    } catch (e) {
+      
     }
   }
 }
