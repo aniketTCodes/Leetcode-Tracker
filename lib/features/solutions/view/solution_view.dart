@@ -20,6 +20,7 @@ class SolutionView extends StatelessWidget {
         }
         if (state is SolutionAddEditState) {
           return SolutionAddEditView(
+            image: state.codeSnippets,
             question: state.question,
             solution: state.solution,
           );

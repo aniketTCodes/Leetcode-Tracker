@@ -27,13 +27,16 @@ final class SaveSolutionEvent extends SolutionEvent {
   final String optimization;
   final String rationale;
   final List<TagModel> tags;
+  final List<Uint8List> codeSnippets;
 
   SaveSolutionEvent(
       {required this.question,
       required this.problemGoal,
       required this.optimization,
       required this.rationale,
-      required this.tags});
+      required this.tags,
+      required this.codeSnippets
+      });
 }
 
 final class AddTagEvent extends SolutionEvent{

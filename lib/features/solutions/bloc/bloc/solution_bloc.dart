@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:leetcode_tracker/core/constants/errors.dart';
@@ -125,11 +128,19 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
     } else {
       final getSolutionResult =
           await solutionRepository.getSolution(event.question.titleSlug);
+      final imageUrlsResult =
+          await solutionRepository.getImageUrls(event.question.titleSlug);
+      List<Uint8List> imageUrls = [];
+      imageUrlsResult.fold(
+          (l) => {emit(prevState.copyWith(l.message))}, (r) => imageUrls = r);
       SolutionModel? solution;
       getSolutionResult.fold(
           (l) => {emit(prevState.copyWith(l.message))}, (r) => solution = r);
       if (solution == null) return;
-      emit(SolutionAddEditState(question: event.question, solution: solution));
+      emit(SolutionAddEditState(
+          question: event.question,
+          solution: solution,
+          codeSnippets: imageUrls));
     }
   }
 
@@ -142,6 +153,7 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
       emit(prevState.copyWith(emptySolutionFieldErrorMessage));
       return;
     }
+    emit(SolutionLoadingState());
     final addSolutionResult = await solutionRepository.setSolution(
         SolutionModel(
             questionTitle: event.question.title,
@@ -151,6 +163,8 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
             rationale: event.rationale,
             tags: event.tags),
         event.question.titleSlug);
+    await solutionRepository.putCodeSnippets(
+        event.codeSnippets, event.question.titleSlug);
     addSolutionResult.fold((l) => emit(prevState.copyWith(l.message)),
         (r) => emit(SolutionDoneState()));
   }

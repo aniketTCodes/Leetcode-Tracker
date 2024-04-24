@@ -35,19 +35,23 @@ class SolutionErrorState extends SolutionState {
 class SolutionAddEditState extends SolutionState {
   final Question question;
   final SolutionModel? solution;
+  final List<Uint8List>? codeSnippets;
   final bool hasErrors;
   final String? errorMessage;
 
-  SolutionAddEditState(
-      {required this.question,
-      this.solution,
-      this.hasErrors = false,
-      this.errorMessage});
+  SolutionAddEditState({
+    required this.question,
+    this.solution,
+    this.hasErrors = false,
+    this.errorMessage,
+    this.codeSnippets,
+  });
   SolutionAddEditState copyWith(String errorMessage) {
     return SolutionAddEditState(
         question: question,
         solution: solution,
         hasErrors: true,
+        codeSnippets: codeSnippets,
         errorMessage: errorMessage);
   }
 }
