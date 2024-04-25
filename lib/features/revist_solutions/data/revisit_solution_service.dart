@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:leetcode_tracker/core/constants/errors.dart';
 import 'package:leetcode_tracker/core/exception/exception.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
@@ -8,6 +9,7 @@ import 'dart:developer' as dev show log;
 class RevisitSolutionService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final firestore = FirebaseFirestore.instance;
+  final firebaseStorage = FirebaseStorage.instance;
   Future<List<SolutionModel>> getAllSolutions() async {
     final uid = firebaseAuth.currentUser!.uid;
     try {
@@ -24,4 +26,6 @@ class RevisitSolutionService {
       throw MyExpection(message: unknownErrorMessage);
     }
   }
+
+
 }
