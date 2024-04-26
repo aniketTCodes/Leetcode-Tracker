@@ -2,6 +2,7 @@ import 'package:leetcode_tracker/features/tags/data/model/tag_model.dart';
 
 class SolutionModel {
   final String questionTitle;
+  final String titleSlug;
   final String difficulty;
   final String problemGoal;
   final String optimization;
@@ -14,7 +15,9 @@ class SolutionModel {
       required this.problemGoal,
       required this.optimization,
       required this.rationale,
-      required this.tags});
+      required this.tags,
+      required this.titleSlug,
+      });
 
   factory SolutionModel.fromFirestore(Map<String, dynamic> map) {
     return SolutionModel(
@@ -23,6 +26,7 @@ class SolutionModel {
         problemGoal: map['problemGoal'],
         optimization: map['optimization'],
         rationale: map['rationale'],
+        titleSlug: map['titleSlug'],
         tags: (map['tags'] as List<dynamic>)
             .map((e) => TagModel.fromFirestore(e as Map<String,dynamic>))
             .toList());
@@ -35,6 +39,7 @@ class SolutionModel {
       'problemGoal': problemGoal,
       'optimization': optimization,
       'rationale': rationale,
+      'titleSlug':titleSlug,
       'tags': tags.map((e) => e.toFirestore()).toList()
     };
   }

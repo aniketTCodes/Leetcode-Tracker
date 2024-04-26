@@ -156,6 +156,7 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
     emit(SolutionLoadingState());
     final addSolutionResult = await solutionRepository.setSolution(
         SolutionModel(
+            titleSlug: event.question.titleSlug,
             questionTitle: event.question.title,
             difficulty: event.question.difficulty,
             problemGoal: event.problemGoal,
@@ -176,6 +177,7 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
         question: prevState.question,
         solution: prevState.solution == null
             ? SolutionModel(
+                titleSlug: prevState.question.titleSlug,
                 questionTitle: prevState.question.title,
                 difficulty: prevState.question.difficulty,
                 problemGoal: "",
@@ -183,6 +185,7 @@ class SolutionBloc extends Bloc<SolutionEvent, SolutionState> {
                 rationale: "",
                 tags: [event.tag])
             : SolutionModel(
+                titleSlug: prevState.question.titleSlug,
                 questionTitle: prevState.solution!.questionTitle,
                 difficulty: prevState.solution!.difficulty,
                 problemGoal: prevState.solution!.problemGoal,

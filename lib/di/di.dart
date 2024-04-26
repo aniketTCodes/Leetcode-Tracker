@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:leetcode_tracker/features/codeSnippets/data/repository/code_snippet_repository.dart';
+import 'package:leetcode_tracker/features/codeSnippets/data/service/code_snippets_service.dart';
 import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_repository.dart';
 import 'package:leetcode_tracker/features/dashboard/data/service/dashboard_service.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
@@ -31,8 +33,12 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<TagService>(() => TagServiceImpl());
   getIt.registerLazySingleton<TagRepository>(
       () => TagRepository(service: getIt<TagService>()));
-      
-  getIt.registerLazySingleton<RevisitSolutionService>(() => RevisitSolutionService());
-  getIt.registerLazySingleton<RevisitSolutionRepository>(
-      () => RevisitSolutionRepository(service: getIt<RevisitSolutionService>()));
+
+  getIt.registerLazySingleton<RevisitSolutionService>(
+      () => RevisitSolutionService());
+  getIt.registerLazySingleton<RevisitSolutionRepository>(() =>
+      RevisitSolutionRepository(service: getIt<RevisitSolutionService>()));
+  getIt.registerLazySingleton<CodeSnippetsService>(() => CodeSnippetsService());
+  getIt.registerLazySingleton<CodeSnippetsRepository>(
+      () => CodeSnippetsRepository(service: getIt<CodeSnippetsService>()));
 }

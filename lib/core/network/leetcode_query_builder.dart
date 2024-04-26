@@ -1,12 +1,10 @@
 import 'package:leetcode_tracker/core/constants/config.dart';
 
-String recentAcQuery(String username)=>
-   """query recentAcSubmissions {
+String recentAcQuery(String username) => """query recentAcSubmissions {
         recentAcSubmissionList(username: "$username", limit: $recentAcQueryLimit) {
           title
         }
       }""";
-
 
 String fetchUSerData(String username) => """query matchedUser{
     matchedUser(username: "$username"){
@@ -21,9 +19,11 @@ String fetchUSerData(String username) => """query matchedUser{
     }
 }""";
 
-String fetchProblemSet(String searchKeyword,int limit,) {
-  
-   return"""
+String fetchProblemSet(
+  String searchKeyword,
+  int limit,
+) {
+  return """
     query problemsetQuestionList{
   problemsetQuestionList: questionList(
     categorySlug: "$categorySlug"
@@ -38,12 +38,9 @@ String fetchProblemSet(String searchKeyword,int limit,) {
       frontendQuestionId: questionFrontendId
       title
       titleSlug
-      topicTags {
-        name
-        id
-        slug
-      }
+      
     }
   }
 }
-    """;}
+    """;
+}
