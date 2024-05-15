@@ -7,6 +7,8 @@ import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_re
 import 'package:leetcode_tracker/features/dashboard/data/service/dashboard_service.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/service/leetcode_service.dart';
+import 'package:leetcode_tracker/features/problem_list/data/repository/problem_list_repository.dart';
+import 'package:leetcode_tracker/features/problem_list/data/service/problem_list_service.dart';
 import 'package:leetcode_tracker/features/revist_solutions/data/repository/revisit_solution_repository.dart';
 import 'package:leetcode_tracker/features/revist_solutions/data/revisit_solution_service.dart';
 import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
@@ -41,4 +43,7 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<CodeSnippetsService>(() => CodeSnippetsService());
   getIt.registerLazySingleton<CodeSnippetsRepository>(
       () => CodeSnippetsRepository(service: getIt<CodeSnippetsService>()));
+
+  getIt.registerLazySingleton<ProblemListService>(() => ProblemListServiceImpl());
+  getIt.registerLazySingleton(() => ProblemListRepository(service: getIt<ProblemListService>()));
 }

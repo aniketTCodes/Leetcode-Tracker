@@ -5,3 +5,6 @@ const String couldNotFetchDataError = 'Error fetching data';
 const String emptySearchKeywordErrorMessage = 'Search keywords cannot be empty';
 const String solutionDoesNotExistError = 'Solution does not exists';
 const String emptySolutionFieldErrorMessage = 'All fields are required';
+const String emptyProblemListTitleMessage = "Problem List title cannot be empty !";
+const String emptyProblemListDescriptionMessage = "Problem List description cannot be empty !";
+const String duplicateListTitleErrorMessage = "Another list with same title already exsits";

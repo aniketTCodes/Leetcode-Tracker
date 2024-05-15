@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:leetcode_tracker/core/constants/app_colors.dart';
 
 class CodeSnippetView extends StatelessWidget {
   final String url;
@@ -6,17 +9,25 @@ class CodeSnippetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.width - 16,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: NetworkImage(
-              url,
-            ),
-            fit: BoxFit.fill),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(10),
+    return CachedNetworkImage(
+      imageUrl: url,
+      imageBuilder: (context, image) => Container(
+        height: MediaQuery.of(context).size.width - 16,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: image, fit: BoxFit.fill),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
+        width: double.infinity,
+      ),
+      placeholder: (context, url) => const Center(
+        child: Text(
+          'Loading...',
+          style: TextStyle(
+            color: appYellow,
+            fontSize: 14,
+          ),
         ),
       ),
     );

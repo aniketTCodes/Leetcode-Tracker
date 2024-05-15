@@ -5,6 +5,8 @@ import 'package:leetcode_tracker/features/complete_profile/bloc/bloc/complete_pr
 import 'package:leetcode_tracker/features/complete_profile/view/complete_profile.dart';
 import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
+import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
 
 class CompleteProfileView extends StatelessWidget {
   static const route = '/completeProfile';
@@ -33,6 +35,8 @@ class CompleteProfileView extends StatelessWidget {
         listener: (context, state) {
           if (state is CompleteProfileDoneState) {
             context.read<DashboardBloc>().add(InitDashBoardEvent());
+            context.read<ProblemListBloc>().add(LoadProblemLists());
+            context.read<RevisitSolutionBloc>().add(GetUserSolutionEvent());
             Navigator.of(context).popAndPushNamed(HomeView.route);
           }
           if (state is CompleteProfileInitial && state.hasErrors) {

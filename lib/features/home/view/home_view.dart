@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/core/painter/background_painter.dart';
-import 'package:leetcode_tracker/features/auth/bloc/auth_bloc.dart';
-import 'package:leetcode_tracker/features/auth/view/auth_view.dart';
-import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dart';
-import 'package:leetcode_tracker/features/dashboard/view/dashboard_view.dart';
-import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
-import 'package:leetcode_tracker/features/revist_solutions/view/revisit_solution_home_view.dart';
-import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
-import 'package:leetcode_tracker/features/solutions/view/solution_view.dart';
+import 'package:leetcode_tracker/features/home/view/dashboard_view.dart';
+import 'package:leetcode_tracker/features/problem_list/view/problem_list_home_view.dart';
 
 class HomeView extends StatefulWidget {
   static const route = '/home';
@@ -21,81 +14,46 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final TextEditingController searchKeywordController = TextEditingController();
+  int selectedScreen = 0;
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: BackgroundPainter(),
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: matteBlack,
-          onPressed: () {
-            context.read<SolutionBloc>().add(SolutionInitEvent());
-            Navigator.pushNamed(context, SolutionView.route);
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedScreen,
+          onTap: (value) {
+            setState(() {
+              selectedScreen = value;
+            });
           },
-          child: const Icon(
-            Icons.add,
-            color: appYellow,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
-          foregroundColor: Colors.transparent,
           backgroundColor: matteBlack,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(LogoutEvent());
-                  Navigator.of(context).popAndPushNamed(AuthView.route);
-                },
-                icon: const Icon(
-                  Icons.logout,
-                  color: appYellow,
-                ))
+          selectedItemColor: appYellow,
+          unselectedItemColor: accentBlack,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home_outlined,
+              ),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.list,
+              ),
+              label: 'Probelem Lists',
+            ),
           ],
         ),
-        body: SizedBox(
-          height: double.infinity,
-          child: Column(
-            children: [
-              BlocConsumer<DashboardBloc, DashboardState>(
-                listener: (context, state) {},
-                builder: (context, state) {
-                  if (state is DashboardDoneState) {
-                    return DashboardView(
-                        name: state.userState.username,
-                        userState: state.userState);
-                  }
-                  return const DashboardView(
-                    name: 'John Doe',
-                    userState: null,
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              BlocProvider(
-                create: (context) =>
-                    RevisitSolutionBloc()..add(GetUserSolutionEvent()),
-                child: BlocConsumer<RevisitSolutionBloc, RevisitSolutionState>(
-                  builder: (context, state) {
-                    if (state is RevisitSolutionsLoadedState) {
-                      final solutionList = state.solutions;
-                      return RevisitSolutionHomeView(solutions: solutionList);
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: matteBlack,
-                      ),
-                    );
-                  },
-                  listener: (context, state) {},
-                ),
-              )
-            ],
-          ),
+        backgroundColor: Colors.transparent,
+        body: Builder(
+          builder: (context) {
+            if (selectedScreen == 0) {
+              return const HomeDashboardView();
+            } else {
+              return const ProblemListView();
+            }
+          },
         ),
       ),
     );

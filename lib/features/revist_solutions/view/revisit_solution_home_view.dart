@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
+import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
 import 'package:leetcode_tracker/features/revist_solutions/view/revisit_solution_view.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/solution_model.dart';
 import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
@@ -80,48 +82,54 @@ class _RevisitSolutionHomeViewState extends State<RevisitSolutionHomeView> {
             height: 10,
           ),
           Expanded(
-              child: ListView.builder(
-            itemCount: solutions.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed(RevisitSolutionview.route,
-                      arguments: solutions[index]);
-                },
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      10,
-                    ),
-                  ),
-                  color: accentBlack,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${index + 1}. ${solutions[index].questionTitle}",
-                          style: const TextStyle(
-                              color: appYellow,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'NotoSerif'),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          solutions[index].difficulty,
-                          style: TextStyle(
-                              color: getColor(solutions[index].difficulty)),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              child: RefreshIndicator(
+            onRefresh: () async {
+              context.read<RevisitSolutionBloc>().add(GetUserSolutionEvent());
             },
+            child: ListView.builder(
+              itemCount: solutions.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(RevisitSolutionview.route,
+                        arguments: solutions[index]);
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                    ),
+                    color: accentBlack,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${index + 1}. ${solutions[index].questionTitle}",
+                            style: const TextStyle(
+                                color: appYellow,
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'NotoSerif'),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            solutions[index].difficulty,
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: getColor(solutions[index].difficulty)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ))
         ],
       ),

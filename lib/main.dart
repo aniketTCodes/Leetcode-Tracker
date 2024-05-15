@@ -12,6 +12,10 @@ import 'package:leetcode_tracker/features/dashboard/bloc/bloc/dashboard_bloc.dar
 import 'package:leetcode_tracker/features/dashboard/data/repository/dashboard_repository.dart';
 import 'package:leetcode_tracker/features/home/view/home_view.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/bloc/question_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/view/problem_list_view.dart';
+import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
 import 'package:leetcode_tracker/features/revist_solutions/view/revisit_solution_view.dart';
 import 'package:leetcode_tracker/features/solutions/bloc/bloc/solution_bloc.dart';
 import 'package:leetcode_tracker/features/solutions/data/repository/solution_repository.dart';
@@ -39,6 +43,15 @@ class MainApp extends StatelessWidget {
     FlutterNativeSplash.remove();
     return MultiBlocProvider(
       providers: [
+        BlocProvider<QuestionBloc>(
+          create: (context) => QuestionBloc(),
+        ),
+        BlocProvider<RevisitSolutionBloc>(
+          create: (context) => RevisitSolutionBloc(),
+        ),
+        BlocProvider<ProblemListBloc>(
+          create: (context) => ProblemListBloc(),
+        ),
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc()..add(AuthInitEvent()),
         ),
@@ -63,6 +76,7 @@ class MainApp extends StatelessWidget {
           HomeView.route: (context) => const HomeView(),
           SolutionView.route: (context) => const SolutionView(),
           RevisitSolutionview.route: (context) => const RevisitSolutionview(),
+          ProblemListView.route: (context) => const ProblemListView(),
         },
       ),
     );
