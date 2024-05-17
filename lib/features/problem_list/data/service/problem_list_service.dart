@@ -4,13 +4,16 @@ import 'package:leetcode_tracker/core/constants/errors.dart';
 import 'package:leetcode_tracker/core/exception/exception.dart';
 import 'package:leetcode_tracker/di/di.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
+import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_question_model.dart';
 import 'dart:developer' as dev show log;
+
+import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 
 abstract class ProblemListService {
   Future<List<ProblemListModel>> getProblemLists();
   Future<void> createNewProblemList(ProblemListModel model);
   Future<void> deleteProblemList(String title);
-  
+  Future<List<ProblemListQuestionModel>> getProblemListQuestions(String title);
 }
 
 class ProblemListServiceImpl implements ProblemListService {
@@ -43,9 +46,25 @@ class ProblemListServiceImpl implements ProblemListService {
     }
   }
 
-  Future<void> deleteProblemList(String title) async{
+  Future<void> deleteProblemList(String title) async {
     try {
-      await firestore.collection('users/$uid/problemLists/').doc(title).delete();
+      await firestore
+          .collection('users/$uid/problemLists/')
+          .doc(title)
+          .delete();
+    } on Exception catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+
+  @override
+  Future<List<ProblemListQuestionModel>> getProblemListQuestions(String title) async {
+    try {
+      final res = await firestore
+          .collection('users/$uid/problemLists/$title/questions')
+          .get();
+      return res.docs.map((e) => ProblemListQuestionModel.fromFirestore(e.data())).toList();
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);

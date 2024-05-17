@@ -111,40 +111,61 @@ class _SelectQuestionDialogueViewState
                               color: const Color.fromARGB(255, 81, 73, 68),
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      "${question.frontendQuestionId}. ${question.title}",
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 15),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          question.difficulty,
-                                          style: TextStyle(
-                                              color:
-                                                  getColor(question.difficulty),
-                                              fontSize: 13,
-                                              fontStyle: FontStyle.italic),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          question.acRate.toStringAsFixed(1),
-                                          style: const TextStyle(
-                                            color: appYellow,
-                                            fontSize: 12,
+                                    Container(
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 200),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            "${question.frontendQuestionId}. ${question.title}",
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15),
                                           ),
-                                        )
-                                      ],
+                                          const SizedBox(
+                                            height: 2,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                question.difficulty,
+                                                style: TextStyle(
+                                                    color: getColor(
+                                                        question.difficulty),
+                                                    fontSize: 13,
+                                                    fontStyle:
+                                                        FontStyle.italic),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                question.acRate
+                                                    .toStringAsFixed(1),
+                                                style: const TextStyle(
+                                                  color: appYellow,
+                                                  fontSize: 12,
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.add,
+                                        color: appYellow,
+                                      ),
                                     )
                                   ],
                                 ),

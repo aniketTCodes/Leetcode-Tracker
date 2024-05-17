@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/core/painter/background_painter.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/bloc/question_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
 import 'package:leetcode_tracker/features/problem_list/view/select_question_view.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -54,6 +53,7 @@ class _ProblemListViewState extends State<ProblemListView> {
         body: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
                 height: 25,
@@ -67,7 +67,7 @@ class _ProblemListViewState extends State<ProblemListView> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -167,6 +167,7 @@ class _ProblemListViewState extends State<ProblemListView> {
                             "${model.solved}/${model.total}",
                             style: const TextStyle(
                               color: Colors.white,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -174,6 +175,34 @@ class _ProblemListViewState extends State<ProblemListView> {
                     ],
                   ),
                 ),
+              ),
+              BlocConsumer<QuestionListBloc, QuestionListState>(
+                builder: (context, state) {
+                  if (state is QuestionListLoadedState) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return Container(
+                              padding: const EdgeInsets.all(
+                                8,
+                              ),
+                              decoration: const BoxDecoration(
+                                color: matteBlack,
+                              ),
+                              child:
+                                  Text(state.questions[index].quesiton.title));
+                        },
+                        itemCount: state.questions.length,
+                      ),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: matteBlack,
+                    ),
+                  );
+                },
+                listener: (context, state) {},
               )
             ],
           ),

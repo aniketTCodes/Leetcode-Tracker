@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/bloc/question_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
 import 'package:leetcode_tracker/features/problem_list/view/problem_list_view.dart';
 
@@ -21,6 +22,8 @@ class ProblemListLoadedView extends StatelessWidget {
             child: ListView.builder(
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
+                  context.read<QuestionListBloc>().add(LoadQuestionEvent(
+                      problemListTitle: problemLists[index].title));
                   Navigator.of(context).pushNamed(ProblemListView.route,
                       arguments: problemLists[index]);
                 },
@@ -34,7 +37,7 @@ class ProblemListLoadedView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.all(8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,7 +50,7 @@ class ProblemListLoadedView extends StatelessWidget {
                             problemLists[index].title,
                             style: const TextStyle(
                               color: appYellow,
-                              fontSize: 18,
+                              fontSize: 20,
                             ),
                             overflow: TextOverflow.fade,
                           ),
@@ -58,7 +61,7 @@ class ProblemListLoadedView extends StatelessWidget {
                             problemLists[index].description,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 13,
+                              fontSize: 14,
                             ),
                           ),
                         ],
@@ -70,7 +73,7 @@ class ProblemListLoadedView extends StatelessWidget {
                         '${problemLists[index].solved}/${problemLists[index].total}',
                         style: const TextStyle(
                           color: appYellow,
-                          fontSize: 18,
+                          fontSize: 20,
                         ),
                       )
                     ],

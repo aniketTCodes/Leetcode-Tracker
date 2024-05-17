@@ -14,6 +14,7 @@ import 'package:leetcode_tracker/features/home/view/home_view.dart';
 import 'package:leetcode_tracker/features/leetcode_api/data/repository/leetcode_repository.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/question_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/bloc/question_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/view/problem_list_view.dart';
 import 'package:leetcode_tracker/features/revist_solutions/bloc/bloc/revisit_solution_bloc.dart';
 import 'package:leetcode_tracker/features/revist_solutions/view/revisit_solution_view.dart';
@@ -43,6 +44,9 @@ class MainApp extends StatelessWidget {
     FlutterNativeSplash.remove();
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => QuestionListBloc(),
+        ), 
         BlocProvider<QuestionBloc>(
           create: (context) => QuestionBloc(),
         ),
