@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/core/painter/background_painter.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/problem_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/bloc/question_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
+import 'package:leetcode_tracker/features/problem_list/view/edit_list_dialogue.dart';
 import 'package:leetcode_tracker/features/problem_list/view/select_question_view.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
 
 class ProblemListView extends StatefulWidget {
   static const String route = '/problemList';
@@ -21,6 +24,7 @@ class _ProblemListViewState extends State<ProblemListView> {
   Widget build(BuildContext context) {
     final ProblemListModel model =
         ModalRoute.of(context)!.settings.arguments as ProblemListModel;
+    final createdOn = DateTime.parse(model.createdOn);
     return CustomPaint(
       painter: BackgroundPainter(),
       child: Scaffold(
@@ -58,57 +62,86 @@ class _ProblemListViewState extends State<ProblemListView> {
               const SizedBox(
                 height: 25,
               ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
+              SizedBox(
+                width: double.infinity,
+                child: Card(
                   color: matteBlack,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                model.title,
-                                style: const TextStyle(
-                                  color: appYellow,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 20,
-                                  fontFamily: 'NotoSerif',
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  context.read<ProblemListBloc>().add(
-                                      DeleteProblemList(title: model.title));
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      backgroundColor: accentBlack,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.title,
+                          style: const TextStyle(
+                            color: appYellow,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${getMonthName(createdOn.month)} ${createdOn.day}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          model.description,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: matteBlack,
                                       title: const Text(
-                                        'Are you sure',
-                                        style: TextStyle(color: appYellow),
-                                      ),
-                                      content: Text(
-                                        'Problem list ${model.title} and all questions in list will be deleted, are you sure?',
-                                        style: const TextStyle(
-                                          color: Colors.white,
+                                        'Delete',
+                                        style: TextStyle(
+                                          color: appYellow,
+                                          fontWeight: FontWeight.bold,
                                         ),
+                                      ),
+                                      content: RichText(
+                                        text: TextSpan(children: [
+                                          const TextSpan(
+                                              text:
+                                                  'Are you sure you want to delete list ',
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                          TextSpan(
+                                            text: model.title,
+                                            style: const TextStyle(
+                                              color: appYellow,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const TextSpan(
+                                            text: ' ?',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ]),
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
                                             context.read<ProblemListBloc>().add(
-                                                DeleteProblemList(
-                                                    title: model.title));
+                                                  DeleteProblemList(
+                                                      id: model.id),
+                                                );
                                             Navigator.of(context).popUntil(
                                               (route) => route.isFirst,
                                             );
@@ -128,86 +161,232 @@ class _ProblemListViewState extends State<ProblemListView> {
                                             'No',
                                             style: TextStyle(
                                               color: appYellow,
-                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         )
                                       ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: appYellow,
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      color: appYellow,
                                     ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: appYellow,
-                                ),
-                              )
-                            ],
-                          ),
-                          Text(
-                            maxLines: 2,
-                            softWrap: true,
-                            overflow: TextOverflow.fade,
-                            model.description,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 14,
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        child: CircularPercentIndicator(
-                          radius: 50,
-                          lineWidth: 8,
-                          progressColor: appYellow,
-                          percent:
-                              model.total != 0 ? model.solved / model.total : 0,
-                          center: Text(
-                            "${model.solved}/${model.total}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
+                            const SizedBox(
+                              width: 5,
                             ),
-                          ),
-                        ),
-                      )
-                    ],
+                            TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => EditListDialogueView(
+                                    model: model,
+                                  ),
+                                );
+                              },
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: appYellow,
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      color: appYellow,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-              BlocConsumer<QuestionListBloc, QuestionListState>(
-                builder: (context, state) {
-                  if (state is QuestionListLoadedState) {
-                    return Expanded(
-                      child: ListView.builder(
+              const SizedBox(
+                height: 8,
+              ),
+              Expanded(
+                child: BlocConsumer<QuestionListBloc, QuestionListState>(
+                  builder: (context, state) {
+                    if (state is QuestionListLoadedState) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(0),
+                        itemCount: state.questions.length,
                         itemBuilder: (context, index) {
                           return Container(
-                              padding: const EdgeInsets.all(
-                                8,
-                              ),
-                              decoration: const BoxDecoration(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
                                 color: matteBlack,
-                              ),
-                              child:
-                                  Text(state.questions[index].quesiton.title));
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          state.questions[index].quesiton.title,
+                                          style: const TextStyle(
+                                            color: appYellow,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              state.questions[index].quesiton
+                                                  .difficulty,
+                                              style: TextStyle(
+                                                color: getColor(
+                                                  state.questions[index]
+                                                      .quesiton.difficulty,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              '${state.questions[index].quesiton.acRate.toString()}%',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.edit_document,
+                                        color: appYellow,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Divider(
+                                  color: appYellow,
+                                ),
+                                IntrinsicHeight(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text(
+                                          'Mark Done',
+                                          style: TextStyle(
+                                            color: appYellow,
+                                          ),
+                                        ),
+                                      ),
+                                      const VerticalDivider(
+                                        color: appYellow,
+                                      ),
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text(
+                                          'Web',
+                                          style: TextStyle(
+                                            color: appYellow,
+                                          ),
+                                        ),
+                                      ),
+                                      const VerticalDivider(
+                                        color: appYellow,
+                                      ),
+                                      TextButton(
+                                        onPressed: () {},
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            color: appYellow,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
                         },
-                        itemCount: state.questions.length,
+                      );
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: matteBlack,
                       ),
                     );
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: matteBlack,
-                    ),
-                  );
-                },
-                listener: (context, state) {},
+                  },
+                  listener: (context, state) {},
+                ),
               )
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+String getMonthName(int monthNumber) {
+  // Define a list of month names
+  List<String> monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+
+  // Validate the input and return the corresponding month's name
+  if (monthNumber < 1 || monthNumber > 12) {
+    return 'Invalid month number';
+  } else {
+    return monthNames[monthNumber - 1];
   }
 }

@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:leetcode_tracker/core/constants/errors.dart';
 import 'package:leetcode_tracker/di/di.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
+import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_question_model.dart';
 import 'package:leetcode_tracker/features/problem_list/data/repository/problem_list_repository.dart';
+import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:meta/meta.dart';
 
 part 'problem_list_event.dart';
@@ -19,6 +23,10 @@ class ProblemListBloc extends Bloc<ProblemListEvent, ProblemListState> {
     on<DeleteProblemList>(
       (event, emit) => _deleteProblemList(event, emit),
     );
+    on<EditProblemListEvent>(
+      (event, emit) => _editProblemList(event, emit),
+    );
+    on<AddQuestionEvent>((event, emit) => _addQuestion(event, emit));
   }
 
   _loadProblemList(
@@ -56,6 +64,7 @@ class ProblemListBloc extends Bloc<ProblemListEvent, ProblemListState> {
     }
 
     final model = ProblemListModel(
+        id: " ",
         title: event.title,
         description: event.description,
         createdOn: DateTime.now().toString(),
@@ -75,12 +84,39 @@ class ProblemListBloc extends Bloc<ProblemListEvent, ProblemListState> {
   _deleteProblemList(
       DeleteProblemList event, Emitter<ProblemListState> emit) async {
     final prevState = state as ProblemListLoaded;
-    final deleteResult = await repo.deleteProblemList(event.title);
+    final deleteResult = await repo.deleteProblemList(event.id);
     deleteResult.fold(
         (l) => emit(prevState.copyWith(l.message)),
         (r) => emit(ProblemListLoaded(
             lists: prevState.lists
-                .where((element) => element.title != event.title)
+                .where((element) => element.id != event.id)
                 .toList())));
+  }
+
+  _editProblemList(
+      EditProblemListEvent event, Emitter<ProblemListState> emit) async {
+    final prevstate = state as ProblemListLoaded;
+    emit(ProblemListInitial());
+    final prevModel = prevstate.lists
+        .where((element) => element.id == event.model.id)
+        .toList();
+    if (identical(prevModel[0], event.model)) {
+      return;
+    }
+    final editResult = await repo.editProblemList(event.model);
+    editResult.fold((l) => emit(prevstate.copyWith(l.message)), (r) {
+      int index = prevstate.lists.indexOf(prevModel[0]);
+      prevstate.lists[index] = event.model;
+      emit(prevstate);
+    });
+  }
+
+  _addQuestion(AddQuestionEvent event, Emitter<ProblemListState> emit) async {
+    final prevState = state as ProblemListLoaded;
+    emit(ProblemListInitial());
+    await repo.addQuestion(
+        event.problemListId,
+        ProblemListQuestionModel(
+            solved: false, quesiton: event.question, id: ''));
   }
 }

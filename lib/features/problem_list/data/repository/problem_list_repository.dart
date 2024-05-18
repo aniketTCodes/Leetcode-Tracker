@@ -35,10 +35,27 @@ class ProblemListRepository {
     }
   }
 
-  Future<Either<Faliure, List<ProblemListQuestionModel>>> getProblemListQuestions(
-      String title) async {
+  Future<Either<Faliure, List<ProblemListQuestionModel>>>
+      getProblemListQuestions(String title) async {
     try {
       return Right(await service.getProblemListQuestions(title));
+    } on MyExpection catch (e) {
+      return Left(Faliure(e.message));
+    }
+  }
+
+  Future<Either<Faliure, void>> editProblemList(ProblemListModel model) async {
+    try {
+      return Right(await service.editProblemList(model));
+    } on MyExpection catch (e) {
+      return Left(Faliure(e.message));
+    }
+  }
+
+  Future<Either<Faliure, void>> addQuestion(
+      String problemListId, ProblemListQuestionModel model) async {
+    try {
+      return Right(await service.addQuestion(problemListId, model));
     } on MyExpection catch (e) {
       return Left(Faliure(e.message));
     }

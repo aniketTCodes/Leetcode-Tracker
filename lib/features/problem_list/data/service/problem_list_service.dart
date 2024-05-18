@@ -14,6 +14,9 @@ abstract class ProblemListService {
   Future<void> createNewProblemList(ProblemListModel model);
   Future<void> deleteProblemList(String title);
   Future<List<ProblemListQuestionModel>> getProblemListQuestions(String title);
+  Future<void> editProblemList(ProblemListModel model);
+  Future<void> addQuestion(
+      String problemListId, ProblemListQuestionModel model);
 }
 
 class ProblemListServiceImpl implements ProblemListService {
@@ -24,9 +27,12 @@ class ProblemListServiceImpl implements ProblemListService {
     try {
       final collectionRef =
           await firestore.collection('users/$uid/problemLists').get();
-      return collectionRef.docs
-          .map((e) => ProblemListModel.fromFirestore(e.data()))
-          .toList();
+      return collectionRef.docs.map(
+        (e) {
+          final docId = e.id;
+          return ProblemListModel.fromFirestore(e.data(), docId);
+        },
+      ).toList();
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);
@@ -38,8 +44,7 @@ class ProblemListServiceImpl implements ProblemListService {
     try {
       await firestore
           .collection('users/$uid/problemLists')
-          .doc(model.title)
-          .set(model.toFirestore());
+          .add(model.toFirestore());
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);
@@ -59,12 +64,42 @@ class ProblemListServiceImpl implements ProblemListService {
   }
 
   @override
-  Future<List<ProblemListQuestionModel>> getProblemListQuestions(String title) async {
+  Future<List<ProblemListQuestionModel>> getProblemListQuestions(
+      String title) async {
     try {
       final res = await firestore
           .collection('users/$uid/problemLists/$title/questions')
           .get();
-      return res.docs.map((e) => ProblemListQuestionModel.fromFirestore(e.data())).toList();
+      return res.docs.map((e) {
+        final id = e.id;
+        return ProblemListQuestionModel.fromFirestore(id, e.data());
+      }).toList();
+    } on Exception catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+
+  @override
+  Future<void> editProblemList(ProblemListModel model) async {
+    try {
+      await firestore
+          .collection('users/$uid/problemLists/')
+          .doc(model.id)
+          .set(model.toFirestore());
+    } on Exception catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+
+  @override
+  Future<void> addQuestion(
+      String problemListId, ProblemListQuestionModel model) async {
+    try {
+      await firestore
+          .collection('users/$uid/problemLists/$problemListId/questions')
+          .add(model.toFirestore());
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);

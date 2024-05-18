@@ -1,14 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/question_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_question_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
 
 class SelectQuestionDialogueView extends StatefulWidget {
-  const SelectQuestionDialogueView({super.key});
+  const SelectQuestionDialogueView({
+    super.key,
+  });
 
   @override
   State<SelectQuestionDialogueView> createState() =>
@@ -21,6 +22,7 @@ class _SelectQuestionDialogueViewState
       TextEditingController();
   final FocusNode searchKeywordFocusNode = FocusNode();
   final List<Question> questions = [];
+  final List<Question> added = [];
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -161,11 +163,20 @@ class _SelectQuestionDialogueViewState
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.add,
-                                        color: appYellow,
-                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          added.add(question);
+                                        });
+                                      },
+                                      icon: added.contains(question)
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: appYellow,
+                                            )
+                                          : const Icon(
+                                              Icons.add,
+                                              color: appYellow,
+                                            ),
                                     )
                                   ],
                                 ),

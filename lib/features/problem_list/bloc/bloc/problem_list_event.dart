@@ -13,7 +13,20 @@ class CreateNewProblemListEvent extends ProblemListEvent{
 }
 
 class DeleteProblemList extends ProblemListEvent{
-  final String title;
+  final String id;
 
-  DeleteProblemList({required this.title});
+  DeleteProblemList({required this.id});
+}
+
+class EditProblemListEvent extends ProblemListEvent{
+  final ProblemListModel model;
+
+  EditProblemListEvent({required this.model});
+}
+
+class AddQuestionEvent extends ProblemListEvent{
+  final String problemListId;
+  final Question question;
+
+  AddQuestionEvent({required this.question,required this.problemListId});
 }
