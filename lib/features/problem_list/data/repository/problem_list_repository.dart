@@ -60,4 +60,22 @@ class ProblemListRepository {
       return Left(Faliure(e.message));
     }
   }
+
+  Future<Either<Faliure, void>> markDone(
+      String problemListId, String titleSlug, bool mark) async {
+    try {
+      return Right(await service.markDone(problemListId, titleSlug, mark));
+    } on MyExpection catch (e) {
+      return Left(Faliure(e.message));
+    }
+  }
+
+  Future<Either<Faliure, void>> deleteQuestion(
+      String problemListId, String titleSlug) async {
+    try {
+      return Right(await service.deleteQuestion(problemListId, titleSlug));
+    } on MyExpection catch (e) {
+      return Left(Faliure(e.message));
+    }
+  }
 }

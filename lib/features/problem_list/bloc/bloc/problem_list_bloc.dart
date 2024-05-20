@@ -26,7 +26,7 @@ class ProblemListBloc extends Bloc<ProblemListEvent, ProblemListState> {
     on<EditProblemListEvent>(
       (event, emit) => _editProblemList(event, emit),
     );
-    on<AddQuestionEvent>((event, emit) => _addQuestion(event, emit));
+   
   }
 
   _loadProblemList(
@@ -111,12 +111,4 @@ class ProblemListBloc extends Bloc<ProblemListEvent, ProblemListState> {
     });
   }
 
-  _addQuestion(AddQuestionEvent event, Emitter<ProblemListState> emit) async {
-    final prevState = state as ProblemListLoaded;
-    emit(ProblemListInitial());
-    await repo.addQuestion(
-        event.problemListId,
-        ProblemListQuestionModel(
-            solved: false, quesiton: event.question, id: ''));
-  }
 }

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leetcode_tracker/core/constants/app_colors.dart';
 import 'package:leetcode_tracker/features/problem_list/bloc/bloc/question_bloc.dart';
+import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/bloc/question_list_bloc.dart';
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_question_model.dart';
 import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
 
 class SelectQuestionDialogueView extends StatefulWidget {
-  const SelectQuestionDialogueView({
-    super.key,
-  });
+  final String problemListId;
+  const SelectQuestionDialogueView({super.key, required this.problemListId});
 
   @override
   State<SelectQuestionDialogueView> createState() =>
@@ -110,6 +110,7 @@ class _SelectQuestionDialogueViewState
                           return GestureDetector(
                             onTap: () {},
                             child: Card(
+                              
                               color: const Color.fromARGB(255, 81, 73, 68),
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
@@ -167,6 +168,11 @@ class _SelectQuestionDialogueViewState
                                         setState(() {
                                           added.add(question);
                                         });
+                                        context.read<QuestionListBloc>().add(
+                                            AddQuestionEvent(
+                                                question: question,
+                                                problemListId:
+                                                    widget.problemListId));
                                       },
                                       icon: added.contains(question)
                                           ? const Icon(

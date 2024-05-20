@@ -9,7 +9,9 @@ import 'package:leetcode_tracker/features/problem_list/bloc/question_list_bloc/b
 import 'package:leetcode_tracker/features/problem_list/data/models/problem_list_model.dart';
 import 'package:leetcode_tracker/features/problem_list/view/edit_list_dialogue.dart';
 import 'package:leetcode_tracker/features/problem_list/view/select_question_view.dart';
+import 'package:leetcode_tracker/features/solutions/data/models/problem_set_model.dart';
 import 'package:leetcode_tracker/features/solutions/view/search_question_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProblemListView extends StatefulWidget {
   static const String route = '/problemList';
@@ -35,7 +37,9 @@ class _ProblemListViewState extends State<ProblemListView> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => const SelectQuestionDialogueView(),
+                builder: (context) => SelectQuestionDialogueView(
+                  problemListId: model.id,
+                ),
               );
             },
             child: const Row(
@@ -227,127 +231,175 @@ class _ProblemListViewState extends State<ProblemListView> {
               const SizedBox(
                 height: 8,
               ),
+              const Text(
+                'Questions',
+                style: TextStyle(
+                  color: matteBlack,
+                  fontSize: 20,
+                ),
+              ),
               Expanded(
                 child: BlocConsumer<QuestionListBloc, QuestionListState>(
                   builder: (context, state) {
                     if (state is QuestionListLoadedState) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(0),
-                        itemCount: state.questions.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                                color: matteBlack,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                      return Builder(builder: (context) {
+                        if (state.questions.isEmpty) {
+                          return const Center(
+                            child: Text("No questions added yet"),
+                          );
+                        }
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            context.read<QuestionListBloc>().add(
+                                LoadQuestionEvent(problemListTitle: model.id));
+                          },
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(0),
+                            itemCount: state.questions.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.all(8),
+                                decoration: const BoxDecoration(
+                                    color: matteBlack,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8))),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          state.questions[index].quesiton.title,
-                                          style: const TextStyle(
-                                            color: appYellow,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               state.questions[index].quesiton
-                                                  .difficulty,
+                                                  .title,
                                               style: TextStyle(
-                                                color: getColor(
+                                                color: appYellow,
+                                                decoration: state
+                                                        .questions[index].solved
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                                decorationThickness: 2,
+                                                decorationColor: appYellow,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
                                                   state.questions[index]
                                                       .quesiton.difficulty,
+                                                  style: TextStyle(
+                                                    color: getColor(
+                                                      state.questions[index]
+                                                          .quesiton.difficulty,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              '${state.questions[index].quesiton.acRate.toString()}%',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  '${state.questions[index].quesiton.acRate.toStringAsFixed(2)}%',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                )
+                                              ],
                                             )
                                           ],
-                                        )
+                                        ),
+                                        IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                            Icons.edit_document,
+                                            color: appYellow,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.edit_document,
-                                        color: appYellow,
-                                      ),
+                                    const Divider(
+                                      color: Colors.white,
                                     ),
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<QuestionListBloc>()
+                                                  .add(MarkDoneEvent(
+                                                      problemListId: model.id,
+                                                      titleSlug: state
+                                                          .questions[index]
+                                                          .quesiton
+                                                          .titleSlug,
+                                                      mark: !state
+                                                          .questions[index]
+                                                          .solved));
+                                            },
+                                            child: const Text(
+                                              'Mark Done',
+                                              style: TextStyle(
+                                                color: appYellow,
+                                              ),
+                                            ),
+                                          ),
+                                          const VerticalDivider(
+                                            color: Colors.white,
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              _launchUrl(state.questions[index]
+                                                  .quesiton.titleSlug);
+                                            },
+                                            child: const Text(
+                                              'Web',
+                                              style: TextStyle(
+                                                color: appYellow,
+                                              ),
+                                            ),
+                                          ),
+                                          const VerticalDivider(
+                                            color: Colors.white,
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<QuestionListBloc>()
+                                                  .add(DeleteQuesitonEvent(
+                                                      problemListId: model.id,
+                                                      titleSlug: state
+                                                          .questions[index]
+                                                          .quesiton
+                                                          .titleSlug));
+                                            },
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: appYellow,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Divider(
-                                  color: appYellow,
-                                ),
-                                IntrinsicHeight(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          'Mark Done',
-                                          style: TextStyle(
-                                            color: appYellow,
-                                          ),
-                                        ),
-                                      ),
-                                      const VerticalDivider(
-                                        color: appYellow,
-                                      ),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          'Web',
-                                          style: TextStyle(
-                                            color: appYellow,
-                                          ),
-                                        ),
-                                      ),
-                                      const VerticalDivider(
-                                        color: appYellow,
-                                      ),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          'Delete',
-                                          style: TextStyle(
-                                            color: appYellow,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                      );
+                              );
+                            },
+                          ),
+                        );
+                      });
                     }
                     return const Center(
                       child: CircularProgressIndicator(
@@ -388,5 +440,14 @@ String getMonthName(int monthNumber) {
     return 'Invalid month number';
   } else {
     return monthNames[monthNumber - 1];
+  }
+}
+
+Future<void> _launchUrl(String titleSlug) async {
+  const host = "www.leetcode.com";
+  final path = 'problems/$titleSlug';
+  final uri = Uri(scheme: 'https', host: host, path: path);
+  if (await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    throw Exception();
   }
 }

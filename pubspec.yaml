@@ -24,6 +24,7 @@ dependencies:
   http: ^1.2.1
   image_picker: ^1.1.0
   percent_indicator: ^4.2.3
+  url_launcher: ^6.2.6
   
 
 dev_dependencies:

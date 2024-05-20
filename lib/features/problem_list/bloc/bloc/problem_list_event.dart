@@ -23,10 +23,3 @@ class EditProblemListEvent extends ProblemListEvent{
 
   EditProblemListEvent({required this.model});
 }
-
-class AddQuestionEvent extends ProblemListEvent{
-  final String problemListId;
-  final Question question;
-
-  AddQuestionEvent({required this.question,required this.problemListId});
-}

@@ -23,7 +23,7 @@ class ProblemListLoadedView extends StatelessWidget {
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
                   context.read<QuestionListBloc>().add(LoadQuestionEvent(
-                      problemListTitle: problemLists[index].title));
+                      problemListTitle: problemLists[index].id));
                   Navigator.of(context).pushNamed(ProblemListView.route,
                       arguments: problemLists[index]);
                 },
@@ -66,16 +66,6 @@ class ProblemListLoadedView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        '${problemLists[index].solved}/${problemLists[index].total}',
-                        style: const TextStyle(
-                          color: appYellow,
-                          fontSize: 20,
-                        ),
-                      )
                     ],
                   ),
                 ),

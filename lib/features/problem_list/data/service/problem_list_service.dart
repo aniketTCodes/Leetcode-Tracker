@@ -15,8 +15,10 @@ abstract class ProblemListService {
   Future<void> deleteProblemList(String title);
   Future<List<ProblemListQuestionModel>> getProblemListQuestions(String title);
   Future<void> editProblemList(ProblemListModel model);
+  Future<void> markDone(String problemListId, String titleSlug, bool mark);
   Future<void> addQuestion(
       String problemListId, ProblemListQuestionModel model);
+  Future<void> deleteQuestion(String problemListId, String titleSlug);
 }
 
 class ProblemListServiceImpl implements ProblemListService {
@@ -51,6 +53,7 @@ class ProblemListServiceImpl implements ProblemListService {
     }
   }
 
+  @override
   Future<void> deleteProblemList(String title) async {
     try {
       await firestore
@@ -71,8 +74,7 @@ class ProblemListServiceImpl implements ProblemListService {
           .collection('users/$uid/problemLists/$title/questions')
           .get();
       return res.docs.map((e) {
-        final id = e.id;
-        return ProblemListQuestionModel.fromFirestore(id, e.data());
+        return ProblemListQuestionModel.fromFirestore(e.data());
       }).toList();
     } on Exception catch (e) {
       dev.log(e.runtimeType.toString());
@@ -99,8 +101,38 @@ class ProblemListServiceImpl implements ProblemListService {
     try {
       await firestore
           .collection('users/$uid/problemLists/$problemListId/questions')
-          .add(model.toFirestore());
+          .doc(model.quesiton.titleSlug)
+          .set(model.toFirestore());
     } on Exception catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+
+  @override
+  Future<void> markDone(
+      String problemListId, String titleSlug, bool mark) async {
+    try {
+      await firestore
+          .collection('users/$uid/problemLists/$problemListId/questions')
+          .doc(titleSlug)
+          .update(
+        {"solved": mark},
+      );
+    } catch (e) {
+      dev.log(e.runtimeType.toString());
+      throw MyExpection(message: unknownErrorMessage);
+    }
+  }
+
+  @override
+  Future<void> deleteQuestion(String problemListId, String titleSlug) async {
+    try {
+      await firestore
+          .collection('users/$uid/problemLists/$problemListId/questions')
+          .doc(titleSlug)
+          .delete();
+    } catch (e) {
       dev.log(e.runtimeType.toString());
       throw MyExpection(message: unknownErrorMessage);
     }
